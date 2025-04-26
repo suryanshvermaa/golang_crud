@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/suryanshvermaa/golang-crud/internal/config"
+	"github.com/suryanshvermaa/golang-crud/internal/http/handlers/student"
 )
 
 func main() {
@@ -19,10 +20,12 @@ func main() {
 	//database setup
 	//setup router
 	router := http.NewServeMux()
-
+	//handlers
 	router.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("healthy✅"))
 	})
+	router.HandleFunc("POST /api/signup", student.New())
+
 	//setup server
 
 	server := http.Server{
@@ -32,7 +35,9 @@ func main() {
 	slog.Info("Server started", slog.String("address", cfg.HttpServer.Addr))
 
 	done := make(chan os.Signal, 1)
+
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
 	go func() {
 		err := server.ListenAndServe()
 		if err != nil {
@@ -40,7 +45,9 @@ func main() {
 		}
 	}()
 	<-done
+
 	slog.Info("shutting down the server")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err := server.Shutdown(ctx)
