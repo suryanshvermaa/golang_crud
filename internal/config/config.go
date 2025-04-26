@@ -25,7 +25,7 @@ func MustLoad() *Config {
 		flag.Parse()
 		configPath = *flags
 		if configPath == "" {
-			log.Fatal("Congig path not found")
+			log.Fatal("Config path not found")
 		}
 	}
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
